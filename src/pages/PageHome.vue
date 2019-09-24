@@ -1,23 +1,19 @@
 <template>
   <div>
     <AppHero />
-    <div class="container">
+    <div v-if="pageLoader_isDataLoaded" class="container">
       <section class="section">
       <div class="m-b-lg">
         <h1 class="title is-inline">Featured Meetups in "Location"</h1>
         <AppDropdown />
         <button class="button is-primary is-pulled-right m-r-sm">Create Meetups</button>
         <router-link :to="{name: 'PageMeetupFind'}" class="button is-primary is-pulled-right m-r-sm">All</router-link>
-        
       </div>
       <div class="row columns">
         <!-- Meetups -->
-
         <MeetupsItem  v-for="meetup in meetups"
                       :key="meetup._id"
                       :meetup="meetup"/>
-        
-        
       </div>
       </section>
       <section class="section">
@@ -31,6 +27,9 @@
         </div>
       </section>
     </div>
+    <div class="container" v-else>
+      <AppSpinner />
+    </div>
   </div>
 </template>
 
@@ -38,24 +37,32 @@
 import CategoryItem from '@/components/CategoryItem'
 import MeetupsItem from '@/components/MeetupsItem'
 import { mapActions, mapState } from 'vuex'
+import pageLoader from '@/mixins/pageLoader'
 
   export default {
     components:{
       CategoryItem,
       MeetupsItem
     },
+    mixins: [pageLoader],
     computed: {
       ...mapState({
-        meetups: (state) => state.meetups,
-        categories: (state) => state.categories,
+        meetups: (state) => state.meetups.items,
+        categories: (state) => state.categories.items,
       }),
     },
     created () {
-      this.fetchMeetups()
-      this.fetchCategories()
+
+      Promise.all([this.fetchMeetups(),this.fetchCategories()])
+        .then(() => this.pageLoader_resolveData())
+        .catch((err) => {
+          console.error(err)
+          this.pageLoader_resolveData()
+        })
     },
     methods: {
-      ...mapActions(['fetchMeetups', 'fetchCategories'])
+      ...mapActions('meetups',['fetchMeetups']),
+      ...mapActions('categories',['fetchCategories'])
     }
   }
 </script>

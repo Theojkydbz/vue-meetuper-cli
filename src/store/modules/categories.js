@@ -1,3 +1,5 @@
+import axios from 'axios'
+
 export default {
     namespaced: true,
     state: {
@@ -8,11 +10,11 @@ export default {
     },
     actions: {
         fetchCategories ({state, commit}) {
-            axios.get('/api/v1/categories')
+            return axios.get('/api/v1/categories')
               .then(res => {
                 const categories = res.data
-                commit('setItems', {resource: 'categories', items: categories})
-                return state.categories
+                commit('setItems', {resource: 'categories', items: categories}, {root: true})
+                return state.items
               })
           },
     },

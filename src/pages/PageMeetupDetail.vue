@@ -1,5 +1,5 @@
 <template>
-  <div class="meetup-detail-page">
+  <div v-if="pageLoader_isDataLoaded" class="meetup-detail-page">
     <section class="hero">
       <div class="hero-body">
         <div class="container">
@@ -159,16 +159,21 @@
       </div>
     </section>
   </div>
+  <div class="container" v-else>
+    <AppSpinner />
+  </div>
 </template>
 
 <script>
 import { mapActions,mapState } from 'vuex'
+import pageLoader from '@/mixins/pageLoader'
 
 export default {
+  mixins: [pageLoader],
   computed: {
     ...mapState({
-        meetup: (state) => state.meetup,
-        threads: (state) => state.threads,
+        meetup: (state) => state.meetups.item,
+        threads: (state) => state.threads.items,
         }),
 
     meetupCreator () {
@@ -180,9 +185,17 @@ export default {
     this.fetchMeetupById(meetupId)
     this.fetchThreads(meetupId)
     
+    Promise.all([this.fetchMeetupById(),this.fetchThreads()])
+        .then((results) => this.pageLoader_resolveData())
+        .catch((err) => {
+          console.error(err)
+          this.pageLoader_resolveData()
+        })
+    
   },
   methods:{
-    ...mapActions(['fetchMeetupById', 'fetchThreads'])
+    ...mapActions('meetups',['fetchMeetupById']),
+    ...mapActions('threads',['fetchThreads'])
   }
 }
 </script>
