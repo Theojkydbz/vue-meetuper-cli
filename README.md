@@ -1,6 +1,6 @@
 # vue-meetuper-cli
 
-color:orange caution Without BUILD
+### caution Without BUILD
 
 ## Project setup
 ```
