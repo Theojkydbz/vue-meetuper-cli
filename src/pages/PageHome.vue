@@ -8,6 +8,7 @@
         <AppDropdown />
         <button class="button is-primary is-pulled-right m-r-sm">Create Meetups</button>
         <router-link :to="{name: 'PageMeetupFind'}" class="button is-primary is-pulled-right m-r-sm">All</router-link>
+        
       </div>
       <div class="row columns">
         <!-- Meetups -->
@@ -36,6 +37,7 @@
 <script>
 import CategoryItem from '@/components/CategoryItem'
 import MeetupsItem from '@/components/MeetupsItem'
+import { mapActions, mapState } from 'vuex'
 
   export default {
     components:{
@@ -43,16 +45,17 @@ import MeetupsItem from '@/components/MeetupsItem'
       MeetupsItem
     },
     computed: {
-      meetups() {
-        return this.$store.getters['meetups']
-      },
-      categories () {
-        return this.$store.getters['categories']
-      }
+      ...mapState({
+        meetups: (state) => state.meetups,
+        categories: (state) => state.categories,
+      }),
     },
     created () {
-      this.$store.dispatch('fetchMeetups')
-      this.$store.dispatch('fetchCategories')
+      this.fetchMeetups()
+      this.fetchCategories()
+    },
+    methods: {
+      ...mapActions(['fetchMeetups', 'fetchCategories'])
     }
   }
 </script>
