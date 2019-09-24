@@ -56,6 +56,8 @@
                             autocomplete="">
                     <div v-if="$v.form.avatar.$error" class="form-error">
                         <span v-if="!$v.form.avatar.url" class="help is-danger">Not correct url</span>
+                        <span v-if="!$v.form.avatar.supportedFileType" class="help is-danger">Not supported file type</span>
+
                     </div>
 
                 </div>
@@ -108,6 +110,7 @@
 
  <script>
     import { required, email, minLength, url, sameAs } from 'vuelidate/lib/validators'
+    import { supportedFileType } from '@/helpers/validators'
 
     export default {
         data() {
@@ -132,18 +135,19 @@
                 },
                 email: {
                     required,
-                    email
+                    email,
                 },
                 avatar: {
-                    url
+                    url,
+                    supportedFileType,
                 },
                 password:{
                     required,
-                    minLength: minLength(6)
+                    minLength: minLength(6),
                 },
                 passwordConfirmation: {
                     required,
-                    sameAsPassword: sameAs('password')
+                    sameAsPassword: sameAs('password'),
                 },
             }
         },
