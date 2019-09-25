@@ -44,7 +44,7 @@
         </div>
       </div>
 
-      <div class="navbar-end">
+      <div v-if="isAuthResolved" class="navbar-end">
         <div class="navbar-item">
           <div v-if="user">
             Welcome {{user.username}}
@@ -86,7 +86,10 @@
     computed:{
       ...mapGetters({
         'user': 'auth/authUser'
-      })
+      }),
+      isAuthResolved () {
+        return this.$store.state.auth.isAuthResolved
+      }
     },
     methods:{
       logout () {

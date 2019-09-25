@@ -19,6 +19,7 @@ export default {
   },
   created () {
     this.$store.dispatch('auth/getAuthUser')
+    
   }
 }
 </script>
