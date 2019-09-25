@@ -153,7 +153,6 @@
         },
         computed: {
             isFormInvalid () {
-              debugger
                 return this.$v.form.$invalid
             }
         },

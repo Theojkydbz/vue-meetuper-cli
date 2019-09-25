@@ -85,8 +85,10 @@
         },
         methods: {
             handleLogin(){
-                this.$v.form.touch()
+                this.$v.form.$touch()
                 this.$store.dispatch('auth/loginWithEmailAndPassword', this.form)
+                  .then(() => this.$router.push('/'))
+                  .catch(err => console.log(err))
             }
         },
     }
