@@ -141,7 +141,7 @@
                     url,
                     supportedFileType,
                 },
-                password:{
+                password:{ 
                     required,
                     minLength: minLength(6),
                 },
