@@ -138,7 +138,7 @@
                     email,
                 },
                 avatar: {
-                    url,
+                    url, 
                     supportedFileType, 
                 },
                 password:{  
