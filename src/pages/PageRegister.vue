@@ -136,9 +136,9 @@
                 email: {
                     required,
                     email,
-                },
+                }, 
                 avatar: {
-                    url, 
+                    url,
                     supportedFileType, 
                 },
                 password:{  
