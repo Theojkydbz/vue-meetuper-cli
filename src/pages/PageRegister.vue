@@ -153,12 +153,15 @@
         },
         computed: {
             isFormInvalid () {
+              debugger
                 return this.$v.form.$invalid
             }
         },
         methods: {
             handleRegister(){
                 this.$store.dispatch('auth/registerUser', this.form)
+                  .then(() => this.$router.push('/login'))
+                  .catch(err => console.log(err))
             }
         }
     }

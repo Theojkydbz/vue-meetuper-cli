@@ -52,7 +52,7 @@ exports.register = function (req, res) {
   })
 }
 
-exports.login = function (req, res) {
+exports.login = function (req, res, next) {
 
   const { email, password } = req.body
 
@@ -72,11 +72,30 @@ exports.login = function (req, res) {
   }
 
   return passport.authenticate('local', (err, passportUser) => {
+    if(err) {
+      return next(err)
+    }
 
-  })
+    if(passportUser){
+      req.login(passportUser, function(err) {
+        if (err) { next(err); }
+
+        return res.json(passportUser)
+      });
+
+    } else {
+      return res.status(422).send({errors: {
+        'authentification': 'Oops, something went wrong!'
+      }})
+    }
+  })(req, res, next)
 
 
   // console.log('login route activated')
 
   // return res.json({status: 'ok'})
+}
+exports.logout = function (req, res) {
+  req.logout()
+  return res.json({status: 'Session destroyed!'})
 }
