@@ -139,7 +139,7 @@
                 },
                 avatar: {
                     url,
-                    supportedFileType,
+                    supportedFileType, 
                 },
                 password:{  
                     required,
