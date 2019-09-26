@@ -2,6 +2,7 @@
 import axios from 'axios'
 import jwt from 'jsonwebtoken'
 import axiosInstance from '@/services/axios'
+import { rejectError } from '@/helpers'
 
 function checkTokenValidity (token) {
     if  (token) {
@@ -34,10 +35,12 @@ export default {
                     localStorage.setItem('meetuper-jwt', user.token)
                     commit('setAuthUser', user)
                 })
+                .catch(err => rejectError(err))
         },
 
         registerUser(context, userData){
             return axios.post('/api/v1/users/register', userData)
+                .catch(err => rejectError(err))
         },
 
         getAuthUser ({commit, getters}) {
@@ -68,7 +71,7 @@ export default {
                 })
         },
 
-        logout ({commit}, userData){
+        logout ({commit}){
 
             // for session authen
             // return axios.post('/api/v1/users/logout', //userData)
@@ -80,7 +83,7 @@ export default {
             //         return err
             //     })
             
-            return new Promise((resolve, reject) => {
+            return new Promise((resolve) => {
                 localStorage.removeItem('meetuper-jwt')
                 commit('setAuthUser',null)
                 resolve(true)

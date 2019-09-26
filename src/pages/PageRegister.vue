@@ -91,7 +91,6 @@
                 </div>
               </div>
               <button   @click.prevent="handleRegister()" 
-                        :disabled="isFormInvalid"
                         type="submit" 
                         class="button is-block is-info is-large is-fullwidth">
                         Register</button>
@@ -128,10 +127,10 @@
         validations:{
             form: {
                 username: {
-                    required,
+                    //required,
                 },
                 name: {
-                    required,
+                    //required,
                 },
                 email: {
                     required,
@@ -141,14 +140,14 @@
                     url,
                     supportedFileType, 
                 },
-                password:{  
+                password: {  
                     required,
                     minLength: minLength(6),
                 },
                 passwordConfirmation: {
                     required,
                     sameAsPassword: sameAs('password'),
-                },
+                }
             }
         },
         computed: {
@@ -160,7 +159,9 @@
             handleRegister(){
                 this.$store.dispatch('auth/registerUser', this.form)
                   .then(() => this.$router.push('/login'))
-                  .catch(err => console.log(err))
+                  .catch((errMessage ) => {
+                    this.$toasted.error(errMessage , {duration: 5000})
+                  })
             }
         }
     }
