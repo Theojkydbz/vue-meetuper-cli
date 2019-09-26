@@ -6,7 +6,7 @@
       <div class="m-b-lg">
         <h1 class="title is-inline">Featured Meetups in "Location"</h1>
         <AppDropdown />
-        <button class="button is-primary is-pulled-right m-r-sm">Create Meetups</button>
+        <router-link :to="{name: 'PageMeetupCreate'}" class="button is-primary is-pulled-right m-r-sm">Create Meetups</router-link>
         <router-link :to="{name: 'PageMeetupFind'}" class="button is-primary is-pulled-right m-r-sm">All</router-link>
       </div>
       <div class="row columns">
