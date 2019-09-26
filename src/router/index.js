@@ -30,14 +30,7 @@ const router = new Router ({
             path: '/meetups/secret',
             name:  'PageSecret',
             component: PageSecret,
-            beforeEnter (to, from, next) {
-                if(store.getter['auth/isAuthenticated']){
-                    next()
-                } else {
-                    next({name: 'PageNotAuthenticated'})
-                }
-
-            }
+            meta: {onlyAuthUser:true}
         },
         {
             path: '/meetups/:id',
@@ -47,12 +40,14 @@ const router = new Router ({
         {
             path: '/login',
             name:  'PageLogin',
-            component: PageLogin
+            component: PageLogin,
+            meta: {onlyGuestUser:true}
         },
         {
             path: '/register',
             name:  'PageRegister',
-            component: PageRegister
+            component: PageRegister,
+            meta: {onlyGuestUser:true}
         },
         {
             path: '/401',
@@ -67,5 +62,30 @@ const router = new Router ({
     ],
     mode: 'history'
 })
+
+
+router.beforeEach((to, from, next) => {
+    store.dispatch('auth/getAuthUser')
+        .then(() => {
+            const isAuthenticated = store.getters['auth/isAuthenticated']
+            if (to.meta.onlyAuthUser) {
+                if (isAuthenticated) {
+                    next()
+                } else {
+                    next({name: 'PageNotAuthenticated'})
+                }
+            } else if (to.meta.onlyGuestUser){
+                if (isAuthenticated) {
+                    next({name: 'PageHome'})
+                } else {
+                    next()
+                }
+            } else {
+                next()
+            }
+        })
+})
+
+
 
 export default router

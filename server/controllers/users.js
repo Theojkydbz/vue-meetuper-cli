@@ -13,15 +13,22 @@ exports.getUsers = function(req, res) {
   });
 }
 
+
+
+
 exports.getCurrentUser = function (req, res, next) {
   const user = req.user;
 
   if(!user) {
     return res.sendStatus(422);
   }
-
-  return res.json(user);
+  // For session auth
+  // return res.json(user);
+  return res.json(user.toAuthJSON());
 };
+
+
+
 
 exports.register = function (req, res) {
 
@@ -62,6 +69,9 @@ exports.register = function (req, res) {
   })
 }
 
+
+
+
 exports.login = function (req, res, next) {
 
   const { email, password } = req.body
@@ -87,11 +97,15 @@ exports.login = function (req, res, next) {
     }
 
     if(passportUser){
-      req.login(passportUser, function(err) {
-        if (err) { next(err); }
 
-        return res.json(passportUser)
-      });
+      //Oly for session AUth
+      // req.login(passportUser, function(err) {
+      //   if (err) { next(err); }
+
+      //   return res.json(passportUser)
+      // });
+
+      return res.json(passportUser.toAuthJSON())
 
     } else {
       return res.status(422).send({errors: {
@@ -105,6 +119,10 @@ exports.login = function (req, res, next) {
 
   // return res.json({status: 'ok'})
 }
+
+
+
+
 exports.logout = function (req, res) {
   req.logout()
   return res.json({status: 'Session destroyed!'})
