@@ -1,5 +1,5 @@
 <template>
-  <form class="m-b-md">
+  <form @input="emitFormdata" class="m-b-md">
     <div class="field">
       <label class="title">Image</label>
       <input v-model="form.image"
@@ -56,6 +56,11 @@
         description: {
           required
         }
+      }
+    },
+    methods: {
+      emitFormdata () {
+        this.$emit('stepUpdated', this.form)
       }
     }
   }
