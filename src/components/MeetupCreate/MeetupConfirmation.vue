@@ -62,7 +62,7 @@
 </template>
 
  <script>
-  export default {
+  export default { 
     validations: {}
   }
 </script>
