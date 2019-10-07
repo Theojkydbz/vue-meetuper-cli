@@ -4,17 +4,19 @@
       {{currentStep}} of {{allStepsCount}}
     </div>
     <!-- Form Steps -->
-    <MeetupLocation v-if="currentStep === 1" @stepUpdated="mergeStepData" />
-    <MeetupDetail v-if="currentStep === 2" @stepUpdated="mergeStepData" />
-    <MeetupDescription v-if="currentStep === 3" @stepUpdated="mergeStepData" />
-    <MeetupConfirmation v-if="currentStep === 4" @stepUpdated="mergeStepData" />
+    <keep-alive>
+      <MeetupLocation v-if="currentStep === 1" @stepUpdated="mergeStepData" ref="currentComponent" />
+      <MeetupDetail v-if="currentStep === 2" @stepUpdated="mergeStepData" ref="currentComponent" />
+      <MeetupDescription v-if="currentStep === 3" @stepUpdated="mergeStepData" ref="currentComponent" />
+      <MeetupConfirmation v-if="currentStep === 4" @stepUpdated="mergeStepData" :meetupToCreate="form"/>
+    </keep-alive>
 
      <progress  class="progress" 
                 :value="currentProgress" 
                 max="100">{{currentProgress}}</progress>
     <div class="controll-btns m-b-md">
-      <button v-if="currentStep > 0" @click="moveToPreviousStep" class="button is-primary m-r-sm">Back</button>
-      <button v-if="currentStep < allStepsCount" @click="moveToNextStep" class="button is-primary">Next</button>
+      <button v-if="currentStep > 1" @click="moveToPreviousStep" class="button is-primary m-r-sm">Back</button>
+      <button v-if="currentStep < allStepsCount" @click="moveToNextStep" :disabled="!canProceed" class="button is-primary">Next</button>
       <!-- Confirm Data -->
       <button v-else
               class="button is-primary">Confirm</button>
@@ -40,6 +42,7 @@
       return {
         currentStep: 1,
         allStepsCount: 4,
+        canProceed: false,
         form: {
           location: null,
           title: null,
@@ -61,12 +64,18 @@
     methods: {
       moveToNextStep () {
         this.currentStep++
+        
+        this.$nextTick(()=>{
+          this.canProceed = !this.$refs['currentComponent'].$v.$invalid
+        })
       },
       moveToPreviousStep () {
         this.currentStep--
+        this.canProceed = true
       },
-      mergeStepData (stepData) {
-        this.form = {...this.form, ...stepData}
+      mergeStepData (step) {
+        this.form = {...this.form, ...step.data}
+        this.canProceed = step.isValid
       }
     },
   }
