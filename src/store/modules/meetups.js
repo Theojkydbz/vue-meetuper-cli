@@ -1,4 +1,6 @@
+import Vue from 'vue'
 import axios from 'axios'
+import axiosInstance from '@/services/axios'
 
 export default {
     namespaced: true,
@@ -27,9 +29,54 @@ export default {
                 return state.item
                 })
             },
+            createMeetup ({rootState}, meetupToCreate) {	      
+                meetupToCreate.meetupCreator = rootState.auth.user
+                meetupToCreate.processedLocation = meetupToCreate.location.toLowerCase().replace(/[\s,]+/g,'').trim()
+          
+                 return axiosInstance.post('/api/v1/meetups', meetupToCreate)
+                  .then(res => res.data)
+            },
+            joinMeetup({state, rootState, commit, dispatch}, meetupId) {
+                const user = rootState.auth.user
+
+                return axiosInstance.post(`/api/v1/meetups/${meetupId}/join`)
+                    .then(() => {
+                        dispatch('auth/addMeetupToAuthUser', meetupId, {root: true})
+
+                        const joinedPeople = state.item.joinedPeople
+                        commit('addUsersToMeetup', [...joinedPeople, user])
+                    })
+            },
+            leaveMeetup ({state, rootState, commit, dispatch}, meetupId) {
+                const user = rootState.auth.user
+          
+                 return axiosInstance.post(`/api/v1/meetups/${meetupId}/leave`)
+                  .then(() => {
+                    dispatch('auth/removeMeetupFromAuthUser', meetupId, {root: true})
+          
+                     const joinedPeople = state.item.joinedPeople
+                    const index = joinedPeople.findIndex(jUser => jUser._id === user._id)
+                    joinedPeople.splice(index, 1)
+                    commit('addUsersToMeetup', joinedPeople)
+                  })
+            },
+            updateMeetup ({commit, state}, meetupData) {
+                meetupData.processedLocation = meetupData.location.toLowerCase().replace(/[\s,]+/g,'').trim()
+                return axiosInstance.patch(`/api/v1/meetups/${meetupData._id}`, meetupData)
+                  .then(res => {
+                    const updatedMeetup = res.data
+                    commit('mergeMeetup', updatedMeetup)
+                    return state.item
+                  })
+            }
 
     },
     mutations: {
-
+        addUsersToMeetup (state, joinedPeople) {
+            Vue.set(state.item,'joinedPeople', joinedPeople)
+        },
+        mergeMeetup (state, updatedMeetup) {
+            state.item = {...state.item, ...updatedMeetup}
+        }
     }
 }

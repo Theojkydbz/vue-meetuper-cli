@@ -5,10 +5,10 @@
     </div>
     <!-- Form Steps -->
     <keep-alive>
-      <MeetupLocation v-if="currentStep === 1" @stepUpdated="mergeStepData" ref="currentComponent" />
-      <MeetupDetail v-if="currentStep === 2" @stepUpdated="mergeStepData" ref="currentComponent" />
-      <MeetupDescription v-if="currentStep === 3" @stepUpdated="mergeStepData" ref="currentComponent" />
-      <MeetupConfirmation v-if="currentStep === 4" @stepUpdated="mergeStepData" :meetupToCreate="form"/>
+      <component  :is="currentComponent"
+                  @stepUpdated="mergeStepData" 
+                  ref="currentComponent"
+                  :meetupToCreate="form" />
     </keep-alive>
 
      <progress  class="progress" 
@@ -19,10 +19,11 @@
       <button v-if="currentStep < allStepsCount" @click="moveToNextStep" :disabled="!canProceed" class="button is-primary">Next</button>
       <!-- Confirm Data -->
       <button v-else
+              @click="emitMeetupConfirm"
               class="button is-primary">Confirm</button>
     </div>
     <!-- Just To See Data in the Form -->
-    <pre><code>{{form}}</code></pre>
+    <!-- <pre><code>{{form}}</code></pre>  -->
   </div>
 </template>
 
@@ -41,8 +42,8 @@
     data () {
       return {
         currentStep: 1,
-        allStepsCount: 4,
         canProceed: false,
+        formSteps:['MeetupLocation', 'MeetupDetail', 'MeetupDescription', 'MeetupConfirmation'],
         form: {
           location: null,
           title: null,
@@ -57,11 +58,20 @@
       }
     },
     computed: {
+      currentComponent(){
+        return this.formSteps[this.currentStep - 1]
+      },
+      allStepsCount(){
+        return this.formSteps.length
+      },
       currentProgress(){
         return (100 / this.allStepsCount) * this.currentStep
       }
     },
     methods: {
+      emitMeetupConfirm(){
+        this.$emit('meetupConfirmed', this.form)
+      },
       moveToNextStep () {
         this.currentStep++
         
